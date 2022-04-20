@@ -70,6 +70,8 @@ public class SceneController : MonoBehaviour
         Debug.Log("SCENE STARTING");
         player.transform.position = spawnPosRight;
         player.inventory.findGemText();
+        player.inventoryManager.inventoryUI = GameObject.FindWithTag("UIInventory").GetComponent<UIInventoryScript>();
+        player.inventoryManager.setImages();
         player.inventory.changeGems(0);
     }
 

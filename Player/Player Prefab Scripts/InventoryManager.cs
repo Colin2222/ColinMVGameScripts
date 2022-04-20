@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class InventoryManager : MonoBehaviour
 {
     public Inventory inventory;
-    private UIInventoryScript inventoryUI;
+    [System.NonSerialized]
+    public UIInventoryScript inventoryUI;
 
     int currentItem = 0;
     [System.NonSerialized]
