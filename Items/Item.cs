@@ -20,37 +20,12 @@ public class Item : MonoBehaviour
         GetComponent<SpriteRenderer>().sortingOrder = sceneManager.itemManager.AddItem();
     }
 
-    void Pickup() {
+    public void Pickup() {
         sceneManager.itemManager.RemoveItem();
 
         // change saved data if unique item is picked up
         if(pickupCondition){
             sceneManager.dataManager.current.gameData[condition.savedName] = true;
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void OnTriggerEnter2D(Collider2D other){
-        Inventory destination = other.GetComponent<Inventory>();
-        if(destination != null){
-            if(isGem){
-                destination.changeGems(1);
-                Pickup();
-                Destroy(gameObject);
-            }
-            if(!isGem){
-                if(!destination.isFull){
-                    destination.addItem(inventoryItem);
-                    Pickup();
-                    Destroy(gameObject);
-                }
-
-            }
         }
     }
 }

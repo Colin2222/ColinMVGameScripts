@@ -253,6 +253,11 @@ public class PlayerMover : MonoBehaviour
             wasAbleToEnterDoor = false;
         }
 
+        // picking up items
+        if(playerScript.itemChecker.canPickup && interactJustPressed){
+            HandleItemPickup();
+        }
+
         // animation updating
         animator.SetFloat("Speed", Mathf.Abs(rigidbody2d.velocity.x));
         animator.SetFloat("VertSpeed",rigidbody2d.velocity.y);
@@ -294,6 +299,13 @@ public class PlayerMover : MonoBehaviour
                 isSpawning = false;
             }
         }
+
+        interactJustPressed = false;
+        teleportJustPressed = false;
+        throwJustPressed = false;
+        strikeJustPressed = false;
+        jumpJustPressed = false;
+        dashJustPressed = false;
     }
 
     // Update is called once per frame
@@ -713,7 +725,7 @@ public class PlayerMover : MonoBehaviour
             waitingToEnter = false;
         }
 
-        if(!waitingToEnter && vertical >= 0.8f && playerScript.physicsChecker.isGrounded && !isDashing){
+        if(!waitingToEnter && vertical >= 0.8f && playerScript.physicsChecker.isGrounded && !isDashing && !inventoryActive){
             playerScript.doorChecker.triggerTransition();
             wasAbleToEnterDoor = false;
         }
@@ -733,11 +745,21 @@ public class PlayerMover : MonoBehaviour
         if(horizontal < -ControllerThreshold){
             if(!invenWasLeft){
                 invenWasLeft = true;
-                // move selection right in inventory
+                // move selection left in inventory
                 playerScript.inventoryManager.moveSelectionLeft();
             }
         } else{
             invenWasLeft = false;
+        }
+
+        if(interactJustPressed){
+            playerScript.inventoryManager.dropItem();
+        }
+    }
+
+    void HandleItemPickup(){
+        if(interactJustPressed && !inventoryActive){
+            playerScript.itemChecker.pickUpItem();
         }
     }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     [System.NonSerialized]
-    public List<InventoryItem> items;
+    public List<InventoryItem> items = new List<InventoryItem>();
     [System.NonSerialized]
     public bool isFull;
     [System.NonSerialized]
@@ -49,18 +49,15 @@ public class Inventory : MonoBehaviour
 
     public void addItem(InventoryItem item){
         if(numItems == size){
-
-        }
-        else{
-            numItems++;
-            items.Add(item);
-        }
-
-        if(numItems == size){
             isFull = true;
         }
         else{
             isFull = false;
+            numItems++;
+            items.Add(item);
+            if(numItems == size){
+                isFull = true;
+            }
         }
 
         if(isPlayerInventory){
@@ -72,5 +69,15 @@ public class Inventory : MonoBehaviour
         if(gemText != null){
             gemText = GameObject.FindWithTag("UIGemBag").GetComponent<UIGemBag>().gemNumber;
         }
+    }
+
+    public void dropItem(int num){
+        if(num < numItems){
+            Instantiate(items[num].prefab, transform.position, Quaternion.identity);
+            numItems--;
+            isFull = false;
+            items.RemoveAt(num);
+        }
+        Debug.Log(numItems);
     }
 }

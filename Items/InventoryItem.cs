@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class InventoryItem
+public class InventoryItem : MonoBehaviour
 {
     public string id;
     public string displayName;
     public Sprite sprite;
+    public GameObject prefab;
 }

@@ -66,4 +66,9 @@ public class InventoryManager : MonoBehaviour
                                                 inventoryUI.images[currentItem].gameObject.GetComponent<RectTransform>().anchoredPosition.y);
         }
     }
+
+    public void dropItem(){
+        inventory.dropItem(currentItem);
+        setImages();
+    }
 }
