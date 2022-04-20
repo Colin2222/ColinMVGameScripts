@@ -11,6 +11,7 @@ public class PlayerScript : MonoBehaviour
     public PlayerMover characterMover;
     public AudioProfile audio;
     public DoorChecker doorChecker;
+    public InventoryManager inventoryManager;
     public TeleballLauncherScript launcher;
 
     public float spawnTime;

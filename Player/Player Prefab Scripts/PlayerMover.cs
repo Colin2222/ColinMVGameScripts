@@ -25,6 +25,11 @@ public class PlayerMover : MonoBehaviour
     private bool wasAbleToEnterDoor = false;
     private bool waitingToEnter = false;
 
+    // inventory management
+    private bool inventoryActive = false;
+    private bool invenWasRight = false;
+    private bool invenWasLeft = false;
+
     //Moving/running
     public float speed = 3.0f;
     public float moveForce;
@@ -126,7 +131,7 @@ public class PlayerMover : MonoBehaviour
     private int[] yesAnswer2 = {-2,-1,-2};
     private float decisionThreshold = 1.0f;
     private float timeSinceLastDecision = 0.0f;
-    public float YNControllerThreshold;
+    public float ControllerThreshold;
 
     // inventory
     [System.NonSerialized]
@@ -170,6 +175,10 @@ public class PlayerMover : MonoBehaviour
             animator.SetBool("IsTalking",true);
             HandleYN();
         }
+        else if(inventoryActive){
+            isFrozen = true;
+            HandleInventory();
+        }
         else{
             isFrozen = false;
         }
@@ -188,6 +197,7 @@ public class PlayerMover : MonoBehaviour
             vertical = Input.GetAxis("Vertical");
             */
 
+            /*
             // set speed for animation handling
             if(Mathf.Abs(horizontal) == 0)
             {
@@ -197,6 +207,7 @@ public class PlayerMover : MonoBehaviour
             {
                 animator.SetBool("IsMoving",true);
             }
+            */
 
             // jumping
             HandleJumping();
@@ -219,8 +230,8 @@ public class PlayerMover : MonoBehaviour
         }
         else
         {
-            //horizontal = 0;
-            //vertical = 0;
+            // guarantee player is frozen
+            rigidbody2d.velocity = new Vector2(0,0);
         }
 
 
@@ -242,10 +253,8 @@ public class PlayerMover : MonoBehaviour
             wasAbleToEnterDoor = false;
         }
 
-
-
         // animation updating
-        animator.SetFloat("Speed", Mathf.Abs(horizontal));
+        animator.SetFloat("Speed", Mathf.Abs(rigidbody2d.velocity.x));
         animator.SetFloat("VertSpeed",rigidbody2d.velocity.y);
 
 
@@ -623,47 +632,47 @@ public class PlayerMover : MonoBehaviour
                 // -2 = down
                 timeSinceLastDecision += Time.deltaTime;
 
-                if(YNHorizontal > YNControllerThreshold && !YNWasRight){
+                if(YNHorizontal > ControllerThreshold && !YNWasRight){
                     YNWasRight = true;
                     last3[2] = last3[1];
                     last3[1] = last3[0];
                     last3[0] = 1;
                     timeSinceLastDecision = 0.0f;
                 }
-                if(YNHorizontal <= YNControllerThreshold){
+                if(YNHorizontal <= ControllerThreshold){
                     YNWasRight = false;
                 }
 
-                if(YNHorizontal < -YNControllerThreshold && !YNWasLeft){
+                if(YNHorizontal < -ControllerThreshold && !YNWasLeft){
                     YNWasLeft = true;
                     last3[2] = last3[1];
                     last3[1] = last3[0];
                     last3[0] = 2;
                     timeSinceLastDecision = 0.0f;
                 }
-                if(YNHorizontal >= -YNControllerThreshold){
+                if(YNHorizontal >= -ControllerThreshold){
                     YNWasLeft = false;
                 }
 
-                if(YNVertical > YNControllerThreshold && !YNWasUp){
+                if(YNVertical > ControllerThreshold && !YNWasUp){
                     YNWasUp = true;
                     last3[2] = last3[1];
                     last3[1] = last3[0];
                     last3[0] = -1;
                     timeSinceLastDecision = 0.0f;
                 }
-                if(YNVertical <= YNControllerThreshold){
+                if(YNVertical <= ControllerThreshold){
                     YNWasUp = false;
                 }
 
-                if(YNVertical < -YNControllerThreshold && !YNWasDown){
+                if(YNVertical < -ControllerThreshold && !YNWasDown){
                     YNWasDown = true;
                     last3[2] = last3[1];
                     last3[1] = last3[0];
                     last3[0] = -2;
                     timeSinceLastDecision = 0.0f;
                 }
-                if(YNVertical >= -YNControllerThreshold){
+                if(YNVertical >= -ControllerThreshold){
                     YNWasDown = false;
                 }
 
@@ -707,6 +716,28 @@ public class PlayerMover : MonoBehaviour
         if(!waitingToEnter && vertical >= 0.8f && playerScript.physicsChecker.isGrounded && !isDashing){
             playerScript.doorChecker.triggerTransition();
             wasAbleToEnterDoor = false;
+        }
+    }
+
+    void HandleInventory(){
+        if(horizontal > ControllerThreshold){
+            if(!invenWasRight){
+                invenWasRight = true;
+                // move selection right in inventory
+                playerScript.inventoryManager.moveSelectionRight();
+            }
+        } else{
+            invenWasRight = false;
+        }
+
+        if(horizontal < -ControllerThreshold){
+            if(!invenWasLeft){
+                invenWasLeft = true;
+                // move selection right in inventory
+                playerScript.inventoryManager.moveSelectionLeft();
+            }
+        } else{
+            invenWasLeft = false;
         }
     }
 
@@ -763,5 +794,15 @@ public class PlayerMover : MonoBehaviour
     private void OnTeleport(){
         teleportPressed = !teleportPressed;
         teleportJustPressed = teleportPressed; 
+    }
+
+    private void OnInventory(){
+        inventoryActive = !inventoryActive;
+
+        if(inventoryActive){
+            playerScript.inventoryManager.turnOn();
+        } else{
+            playerScript.inventoryManager.turnOff();
+        }
     }
 }

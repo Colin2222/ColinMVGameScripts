@@ -9,12 +9,14 @@ public class Inventory : MonoBehaviour
     public List<InventoryItem> items;
     [System.NonSerialized]
     public bool isFull;
-    private int numItems = 0;
+    [System.NonSerialized]
+    public int numItems = 0;
 
     public int size;
 
     public bool canHoldGems;
     public bool isPlayerInventory = false;
+    private PlayerScript player;
     public int numGems;
 
     private Text gemText;
@@ -23,7 +25,8 @@ public class Inventory : MonoBehaviour
     {
         items = new List<InventoryItem>();
         if(isPlayerInventory){
-            gemText = GameObject.FindWithTag("UIGemBag").GetComponent<UIGemBag>().gemNumber;
+            //gemText = GameObject.FindWithTag("UIGemBag").GetComponent<UIGemBag>().gemNumber;
+            player = GameObject.FindWithTag("PlayerTag").GetComponent<PlayerScript>();
         }
 
         // CHANGE THIS TO SYNC WITH PLAYERSTATE TO KEEP GEMS BETWEEN LEVELS
@@ -58,6 +61,10 @@ public class Inventory : MonoBehaviour
         }
         else{
             isFull = false;
+        }
+
+        if(isPlayerInventory){
+            player.inventoryManager.setImages();
         }
     }
 
