@@ -11,7 +11,7 @@ public class DoorTransitionScript : MonoBehaviour
     public int entranceDirection = 0;
 
     bool active = false;
-    public GameObject child;
+    public GameObject arrow;
     public Transform doorTransform;
     PlayerScript player;
 
@@ -28,7 +28,7 @@ public class DoorTransitionScript : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         active = true;
-        child.SetActive(true);
+        arrow.SetActive(true);
         player = other.transform.parent.GetComponent<PlayerScript>();
         /*
         PlayerScript player = other.transform.parent.GetComponent<PlayerScript>();
@@ -45,7 +45,7 @@ public class DoorTransitionScript : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D player){
         active = false;
-        child.SetActive(false);
+        arrow.SetActive(false);
     }
 
     public void transitionThroughDoor(){
