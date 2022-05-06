@@ -29,6 +29,13 @@ public class PlayerMover : MonoBehaviour
     private bool inventoryActive = false;
     private bool invenWasRight = false;
     private bool invenWasLeft = false;
+    private bool invenWasUp = false;
+    private bool invenWasDown = false;
+
+    // utility interactable management
+    private bool utilityActive = false;
+    private bool utilityWasActive = false;
+    private bool utilInventoryActive = false;
 
     //Moving/running
     public float speed = 3.0f;
@@ -150,6 +157,8 @@ public class PlayerMover : MonoBehaviour
     private bool throwJustPressed = false;
     private bool teleportPressed = false;
     private bool teleportJustPressed = false;
+    private bool bPressed = false;
+    private bool bJustPressed = false;
 
 
 
@@ -175,9 +184,12 @@ public class PlayerMover : MonoBehaviour
             animator.SetBool("IsTalking",true);
             HandleYN();
         }
-        else if(inventoryActive){
+        else if(inventoryActive && !utilInventoryActive){
             isFrozen = true;
             HandleInventory();
+        }
+        else if(utilityActive){
+            isFrozen = true;
         }
         else{
             isFrozen = false;
@@ -258,6 +270,11 @@ public class PlayerMover : MonoBehaviour
             HandleItemPickup();
         }
 
+        // interacting with utilities
+        if(playerScript.utilityChecker.canUseUtility){
+            HandleUtility();
+        }
+
         // animation updating
         animator.SetFloat("Speed", Mathf.Abs(rigidbody2d.velocity.x));
         animator.SetFloat("VertSpeed",rigidbody2d.velocity.y);
@@ -306,6 +323,24 @@ public class PlayerMover : MonoBehaviour
         strikeJustPressed = false;
         jumpJustPressed = false;
         dashJustPressed = false;
+        bJustPressed = false;
+
+        // update inventory/utility directions
+        if(vertical < ControllerThreshold){
+            invenWasUp = false;
+        }
+
+        if(vertical > -ControllerThreshold){
+            invenWasDown = false;
+        }
+
+        if(horizontal < ControllerThreshold){
+            invenWasRight = false;
+        }
+
+        if(horizontal > -ControllerThreshold){
+            invenWasLeft = false;
+        }
     }
 
     // Update is called once per frame
@@ -721,11 +756,11 @@ public class PlayerMover : MonoBehaviour
         }
 
         // TO DO: set threshold for joystick reset when entering doors
-        if(vertical < 0.2f){
+        if(vertical < ControllerThreshold){
             waitingToEnter = false;
         }
 
-        if(!waitingToEnter && vertical >= 0.8f && playerScript.physicsChecker.isGrounded && !isDashing && !inventoryActive){
+        if(!waitingToEnter && vertical >= ControllerThreshold && playerScript.physicsChecker.isGrounded && !isDashing && !inventoryActive){
             playerScript.doorChecker.triggerTransition();
             wasAbleToEnterDoor = false;
         }
@@ -752,8 +787,83 @@ public class PlayerMover : MonoBehaviour
             invenWasLeft = false;
         }
 
-        if(interactJustPressed){
+        if(!utilityActive && interactJustPressed){
             playerScript.inventoryManager.dropItem();
+        }
+
+        if(utilityActive){
+            if(jumpJustPressed){
+
+            }
+        }
+    }
+
+    void HandleUtility(){
+        if(utilityActive){
+            if(bJustPressed){
+                utilityActive = false;
+
+                playerScript.utilityChecker.currentShelf.turnOff();
+            }
+            if(inventoryActive){
+                if(jumpJustPressed){
+                    if(playerScript.inventory.items[playerScript.inventoryManager.currentItem] != null){
+                        if(playerScript.utilityChecker.currentShelf.inventory.items[playerScript.utilityChecker.currentShelf.currentItem] == null){
+                            InventoryItem insertion = playerScript.inventoryManager.removeItem(playerScript.inventoryManager.currentItem);
+                            playerScript.utilityChecker.currentShelf.addToInventory(insertion, playerScript.utilityChecker.currentShelf.currentItem);
+                        }
+                    }
+                }
+            } else{
+                if(jumpJustPressed){
+                    if(playerScript.utilityChecker.currentShelf.inventory.items[playerScript.utilityChecker.currentShelf.currentItem] != null){
+                        if(!playerScript.inventory.isFull){
+                            InventoryItem extraction = playerScript.utilityChecker.currentShelf.removeFromUtility();
+                            playerScript.inventory.addItem(extraction);
+                            playerScript.inventoryManager.setImages();
+                        }
+                    }
+                }
+                if(horizontal > ControllerThreshold){
+                    if(!invenWasRight){
+                        playerScript.utilityChecker.currentShelf.moveRight();
+                        invenWasRight = true;
+                    }
+                } else {
+                    invenWasRight = false;
+                }
+
+                if(horizontal < -ControllerThreshold){
+                    if(!invenWasLeft){
+                        playerScript.utilityChecker.currentShelf.moveLeft();
+                        invenWasLeft = true;
+                    }
+                } else {
+                    invenWasLeft = false;
+                }
+
+                if(vertical < -ControllerThreshold){
+                    if(!invenWasDown){
+                        playerScript.utilityChecker.currentShelf.moveDown();
+                        invenWasDown = true;
+                    }
+                } else {
+                    invenWasDown = false;
+                }
+
+                if(vertical > ControllerThreshold){
+                    if(!invenWasUp){
+                        playerScript.utilityChecker.currentShelf.moveUp();
+                        invenWasUp = true;
+                    }
+                } else {
+                    invenWasUp = false;
+                }
+            }
+        } else if(vertical >= ControllerThreshold && !invenWasUp && playerScript.physicsChecker.isGrounded && !inventoryActive){
+            invenWasUp = true;
+            utilityActive = true;
+            playerScript.utilityChecker.currentShelf.turnOn();
         }
     }
 
@@ -826,5 +936,10 @@ public class PlayerMover : MonoBehaviour
         } else{
             playerScript.inventoryManager.turnOff();
         }
+    }
+
+    private void OnUseB(){
+        bPressed = !bPressed;
+        bJustPressed = bPressed;
     }
 }

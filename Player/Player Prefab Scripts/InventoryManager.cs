@@ -9,7 +9,8 @@ public class InventoryManager : MonoBehaviour
     [System.NonSerialized]
     public UIInventoryScript inventoryUI;
 
-    int currentItem = 0;
+    [System.NonSerialized]
+    public int currentItem = 0;
     [System.NonSerialized]
     public bool active = false;
     // Start is called before the first frame update
@@ -25,14 +26,13 @@ public class InventoryManager : MonoBehaviour
     }
 
     public void setImages(){
-        for(int i = 0; i < inventory.numItems; i++){
-            inventoryUI.images[i].sprite = inventory.items[i].sprite;
-            inventoryUI.images[i].gameObject.SetActive(true);
-        }
-
-        // set rest of inventory icons to be inactive
-        for(int j = inventory.numItems; j < inventory.size; j++){
-            inventoryUI.images[j].gameObject.SetActive(false);
+        for(int i = 0; i < inventory.size; i++){
+            if(inventory.items[i] != null){
+                inventoryUI.images[i].sprite = inventory.items[i].sprite;
+                inventoryUI.images[i].gameObject.SetActive(true);
+            } else{
+                inventoryUI.images[i].gameObject.SetActive(false);
+            }
         }
     }
 
@@ -70,5 +70,11 @@ public class InventoryManager : MonoBehaviour
     public void dropItem(){
         inventory.dropItem(currentItem);
         setImages();
+    }
+
+    public InventoryItem removeItem(int num){
+        InventoryItem result = inventory.removeItem(num);
+        setImages();
+        return result;
     }
 }

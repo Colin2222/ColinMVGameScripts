@@ -12,6 +12,7 @@ public class PlayerScript : MonoBehaviour
     public AudioProfile audio;
     public DoorChecker doorChecker;
     public ItemChecker itemChecker;
+    public UtilityChecker utilityChecker;
     public InventoryManager inventoryManager;
     public TeleballLauncherScript launcher;
 

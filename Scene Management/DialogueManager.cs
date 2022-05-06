@@ -203,7 +203,7 @@ public class DialogueManager : MonoBehaviour
                     // INVENTORY CHECK
                     else if(childNode.Attributes["type"].Value.Equals("inventoryReq")){
                         bool foundItem = false;
-                        for(int i = 0; i < playerScript.inventory.items.Count; i++){
+                        for(int i = 0; i < playerScript.inventory.numItems; i++){
                             if(playerScript.inventory.items[i].id.Equals(childNode.Attributes["id"].Value)){
                                 foundItem = true;
                                 break;

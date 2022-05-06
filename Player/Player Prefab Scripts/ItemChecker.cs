@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ItemChecker : MonoBehaviour
 {
+    public PlayerScript playerScript;
+
     [System.NonSerialized]
     public bool canPickup = false;
 
@@ -28,7 +30,11 @@ public class ItemChecker : MonoBehaviour
         }
         if(!currentItem.isGem){
             if(!inventory.isFull){
-                inventory.addItem(currentItem.inventoryItem);
+                int openIndex = 0;
+                while(playerScript.inventoryManager.inventory.items[openIndex] != null){
+                    openIndex++;
+                }
+                inventory.addItem(currentItem.inventoryItem, openIndex);
                 currentItem.Pickup();
                 Destroy(currentItem.transform.gameObject);
             }

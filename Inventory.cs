@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     [System.NonSerialized]
-    public List<InventoryItem> items = new List<InventoryItem>();
+    public InventoryItem[] items;
     [System.NonSerialized]
     public bool isFull;
     [System.NonSerialized]
@@ -21,9 +21,15 @@ public class Inventory : MonoBehaviour
 
     private Text gemText;
 
+    void Awake(){
+        items = new InventoryItem[size];
+        for(int i = 0; i < size; i++){
+            items[i] = null;
+        }
+    }
+
     void Start()
     {
-        items = new List<InventoryItem>();
         if(isPlayerInventory){
             //gemText = GameObject.FindWithTag("UIGemBag").GetComponent<UIGemBag>().gemNumber;
             player = GameObject.FindWithTag("PlayerTag").GetComponent<PlayerScript>();
@@ -47,14 +53,10 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void addItem(InventoryItem item){
-        if(numItems == size){
-            isFull = true;
-        }
-        else{
-            isFull = false;
+    public void addItem(InventoryItem item, int num){
+        if(items[num] == null){
             numItems++;
-            items.Add(item);
+            items[num] = item;
             if(numItems == size){
                 isFull = true;
             }
@@ -65,6 +67,15 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void addItem(InventoryItem insertion){
+        int openIndex = 0;
+        while(items[openIndex] != null){
+            openIndex++;
+        }
+
+        items[openIndex] = insertion;
+    }
+
     public void findGemText(){
         if(gemText != null){
             gemText = GameObject.FindWithTag("UIGemBag").GetComponent<UIGemBag>().gemNumber;
@@ -72,12 +83,22 @@ public class Inventory : MonoBehaviour
     }
 
     public void dropItem(int num){
-        if(num < numItems){
+        if(items[num] != null){
             Instantiate(items[num].prefab, transform.position, Quaternion.identity);
             numItems--;
             isFull = false;
-            items.RemoveAt(num);
+            items[num] = null;
         }
-        Debug.Log(numItems);
+    }
+
+    public InventoryItem removeItem(int num){
+        if(items[num] != null){
+            numItems--;
+            isFull = false;
+            InventoryItem result = items[num];
+            items[num] = null;
+            return result;
+        }
+        return null;
     }
 }
