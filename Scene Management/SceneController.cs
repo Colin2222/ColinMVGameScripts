@@ -35,6 +35,7 @@ public class SceneController : MonoBehaviour
 
     void Awake()
     {
+        // check if there is a DontDestroyOnLoad DataManager, create a new one if there isnt
         dataManagerTest = GameObject.FindWithTag("DataManager");
         if(dataManagerTest == null){
             dataManager = Instantiate(dataManagerPrefab,new Vector3(0,0,0),Quaternion.identity).GetComponent<DataManager>();
@@ -43,6 +44,7 @@ public class SceneController : MonoBehaviour
             dataManager = dataManagerTest.GetComponent<DataManager>();
         }
 
+        // check if there is a DontDestroyOnLoad PlayerState, create a new one if there isnt
         playerStateObjectTest = GameObject.FindWithTag("PlayerState");
         if(playerStateObjectTest == null)
         {
@@ -53,6 +55,7 @@ public class SceneController : MonoBehaviour
             playerState = playerStateObjectTest.GetComponent<PlayerState>();
         }
 
+        // check if there is a DontDestroyOnLoad player, create a new one if there isnt
         playerObjectTest = GameObject.FindWithTag("PlayerTag");
         if(playerObjectTest == null){
             player = Instantiate(playerPrefab,new Vector3(0,0,0),Quaternion.identity).GetComponent<PlayerScript>();
@@ -61,26 +64,27 @@ public class SceneController : MonoBehaviour
             player = playerObjectTest.GetComponent<PlayerScript>();
         }
 
+        // sync the DataManagers
         dataManager.findClockGUI();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("SCENE STARTING");
+        // sets player position to the correct spawn position
+        // PLACEHOLDER CODE, the player spawn position should depend on direction facing when last scene's transition was entered
         player.transform.position = spawnPosRight;
+
+        // call player's inventory to find gem text UI element
         player.inventory.findGemText();
+
+        // call players inventory manager to find the inventory UI element
         player.inventoryManager.inventoryUI = GameObject.FindWithTag("UIInventory").GetComponent<UIInventoryScript>();
         player.inventoryManager.setImages();
         player.inventory.changeGems(0);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    // loads the scene of the inputted build index
     public IEnumerator SwitchScenes(int buildIndex, int entranceNumber, int directionNumber)
     {
         yield return new WaitForSeconds(transitionTime);

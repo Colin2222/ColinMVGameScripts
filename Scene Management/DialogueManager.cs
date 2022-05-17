@@ -16,6 +16,9 @@ public class DialogueManager : MonoBehaviour
 
     XmlDocument dialogueXml;
     XmlNode currentNode;
+
+    // this list keeps track of the path taken to get to currentNode
+    // ex: if the current node is
     private List<int> xmlTreeTracker;
     private int currentDepth;
     [System.NonSerialized]
@@ -45,6 +48,8 @@ public class DialogueManager : MonoBehaviour
     }
 
     void Update(){
+
+        // update the timer keeping track of silence
         if(isSilence){
             silenceTimer += Time.deltaTime;
             if(silenceTimer > silenceEnd){
@@ -52,6 +57,8 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
+
+        // update the timer keeping track of the lack of response to a Y/N question
         if(YNTimer > 0.0f){
             YNTimer -= Time.deltaTime;
             // answer window has passed and the player has not answered and chosen silence
@@ -124,23 +131,33 @@ public class DialogueManager : MonoBehaviour
     //
     public bool HandleNextElement(){
         //Debug.Log("CHECKING ELEMENT" + xmlTreeTracker[currentDepth] + " AT DEPTH " + currentDepth);
+
+        // set currentNode to the first meaningful node in the tree since dialogue is being initiated
         if(currentNode == null && !isTalking){
             currentNode = dialogueXml.FirstChild.NextSibling.FirstChild;
             isTalking = true;
         }
+
+        // end of tree has been found at current depth
         if(currentNode == null && isTalking){
-
-
+            // retract depth by one
             xmlTreeTracker.RemoveAt(currentDepth);
             currentDepth--;
+
+            // check if there are no available conversation elements and exit the conversation if so
             if(currentDepth < 0){
                 player.ExitConversation();
                 animator.SetBool("IsOpen",false);
                 isTalking = false;
+
+                // reset tracker for next conversation
                 xmlTreeTracker = new List<int>();
                 xmlTreeTracker.Add(0);
                 return false;
             }
+
+            // recalibrate position of currentNode within the tree so that it is the next sibling of the parent of the
+            // branch just completed
             currentNode = dialogueXml.FirstChild.NextSibling.FirstChild;
             for(int depth = 0; depth <= currentDepth; depth++){
                 for(int element = 0; element < xmlTreeTracker[depth]; element++){
@@ -190,6 +207,8 @@ public class DialogueManager : MonoBehaviour
         else if(currentNode.Attributes["type"].Value.Equals("branch")){
             bool validBranch = true;
             int numRequirements = 0;
+
+            // check all 'requirement' children of the branch to ensure the branch is valid
             foreach(XmlNode childNode in currentNode.ChildNodes){
                 if(childNode.Name.Equals("requirement")){
                     // SAVED DATA REQUIREMENT
@@ -223,10 +242,15 @@ public class DialogueManager : MonoBehaviour
                     numRequirements++;
                 }
             }
+
+            //
             if(validBranch){
                 currentNode = currentNode.FirstChild;
                 xmlTreeTracker[currentDepth]++;
                 currentDepth++;
+
+                // since currentNode is now one level deeper in the tree, update xmlTreeTracker to the correct
+                // value for this depth and update currentNode to be the correcet child node
                 xmlTreeTracker.Add(0);
                 for(int i = 0; i < numRequirements; i ++){
                     currentNode = currentNode.NextSibling;

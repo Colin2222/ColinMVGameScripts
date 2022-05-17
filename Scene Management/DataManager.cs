@@ -31,6 +31,7 @@ public class DataManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // update the current time and day, display in UI
         currentTime += Time.deltaTime;
         if(currentTime > lengthOfDay){
             currentTime = 0;
@@ -60,6 +61,7 @@ public class DataManager : MonoBehaviour
         return current.gameData[key];
     }
 
+    // update the UI elements to show the current time
     void displayTime(){
         float minutes = Mathf.FloorToInt(currentTime / 60);
         float seconds = Mathf.FloorToInt(currentTime % 60);
@@ -67,6 +69,7 @@ public class DataManager : MonoBehaviour
         dayText.text = string.Format("Day {0}", currentDay);
     }
 
+    // finds the UI elements that the time values will be displaye on
     public void findClockGUI(){
         clockText = GameObject.FindWithTag("UIClockText").GetComponent<Text>();
         dayText = GameObject.FindWithTag("UIDayText").GetComponent<Text>();
