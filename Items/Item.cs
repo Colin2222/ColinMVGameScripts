@@ -11,21 +11,22 @@ public class Item : MonoBehaviour
     public string displayName;
     public InventoryItem inventoryItem;
     public ItemSpawnCondition condition;
-    public bool pickupCondition;
+    public bool inScene;
+    public string prefabName;
 
     // Start is called before the first frame update
     void Start()
     {
+        if(inScene){
+            transform.gameObject.SetActive(false);
+        }
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneController>();
+
+        // get order within sorting layer to prevent the weird clipping of sprites when the camera moves
         GetComponent<SpriteRenderer>().sortingOrder = sceneManager.itemManager.AddItem();
     }
 
     public void Pickup() {
         sceneManager.itemManager.RemoveItem();
-
-        // change saved data if unique item is picked up
-        if(pickupCondition){
-            sceneManager.dataManager.current.gameData[condition.savedName] = true;
-        }
     }
 }

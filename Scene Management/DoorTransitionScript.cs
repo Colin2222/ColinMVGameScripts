@@ -51,6 +51,10 @@ public class DoorTransitionScript : MonoBehaviour
     public void transitionThroughDoor(){
         sceneManager.playerState.entranceNumber = entranceNumber;
         if(!(player.isSpawning)){
+            // save room data to xml
+            sceneManager.roomData.WriteToXML();
+
+            // start loading of new scene
             StartCoroutine(sceneManager.SwitchScenes(buildIndex,entranceNumber,entranceDirection));
             sceneManager.player.resetSpawning();
         }

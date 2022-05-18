@@ -8,6 +8,7 @@ public class SceneController : MonoBehaviour
     public ItemManager itemManager;
     public CharacterManager characterManager;
     public DialogueManager dialogueManager;
+    public RoomData roomData;
 
     public float transitionTime;
 
