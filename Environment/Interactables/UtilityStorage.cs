@@ -18,6 +18,8 @@ public class UtilityStorage : MonoBehaviour
     private bool extractionActive = false;
     public GameObject arrow;
 
+    public int roomDataId;
+
     void Start(){
         updateItemImages();
     }

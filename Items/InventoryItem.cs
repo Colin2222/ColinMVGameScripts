@@ -8,4 +8,5 @@ public class InventoryItem : MonoBehaviour
     public string displayName;
     public Sprite sprite;
     public GameObject prefab;
+    public string prefabName;
 }
