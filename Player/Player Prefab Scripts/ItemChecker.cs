@@ -34,7 +34,9 @@ public class ItemChecker : MonoBehaviour
                 while(playerScript.inventoryManager.inventory.items[openIndex] != null){
                     openIndex++;
                 }
-                inventory.addItem(currentItem.inventoryItem, openIndex);
+                InventoryItem addition = Instantiate(currentItem.inventoryItem).GetComponent<InventoryItem>();
+                inventory.addItem(addition, openIndex);
+                addition.transform.parent = inventory.transform;
                 currentItem.Pickup();
                 Destroy(currentItem.transform.gameObject);
             }

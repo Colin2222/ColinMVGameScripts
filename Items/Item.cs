@@ -9,7 +9,7 @@ public class Item : MonoBehaviour
     public bool isGem;
     public string id;
     public string displayName;
-    public InventoryItem inventoryItem;
+    public GameObject inventoryItem;
     public ItemSpawnCondition condition;
     public bool inScene;
     public string prefabName;

@@ -820,6 +820,7 @@ public class PlayerMover : MonoBehaviour
                         if(!playerScript.inventory.isFull){
                             InventoryItem extraction = playerScript.utilityChecker.currentShelf.removeFromUtility();
                             playerScript.inventory.addItem(extraction);
+                            extraction.transform.parent = playerScript.inventory.transform;
                             playerScript.inventoryManager.setImages();
                         }
                     }

@@ -87,6 +87,7 @@ public class Inventory : MonoBehaviour
             Instantiate(items[num].prefab, transform.position, Quaternion.identity);
             numItems--;
             isFull = false;
+            Destroy(items[num].transform.gameObject);
             items[num] = null;
         }
     }
