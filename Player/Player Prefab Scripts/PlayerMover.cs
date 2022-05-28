@@ -589,7 +589,7 @@ public class PlayerMover : MonoBehaviour
                     horizontal = lastHorizontal;
                     vertical = lastVertical;
                     isDashing = false;
-                    rigidbody2d.velocity = new Vector2(0.0f,0.0f);
+                    rigidbody2d.velocity = new Vector2(0.0f,Mathf.Clamp(rigidbody2d.velocity.y, -100.0f, 0.0f));
                 }
             }
             if(dashReloadCounter > 0)
